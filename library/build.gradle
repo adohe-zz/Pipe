@@ -15,5 +15,5 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:19.+'
+    compile 'org.apache.httpcomponents:httpclient:4.3.4'
 }
