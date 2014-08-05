@@ -182,10 +182,11 @@ public class AsyncHttpClient {
         HttpEntityEnclosingRequestBase request = addEntityToRequestBase(new HttpPost(URI.create(url).normalize()), entity);
         if (headers != null)
             request.setHeaders(headers);
+        sendRequest(httpClient, httpContext, request, contentType, responseHandler, context);
     }
 
     protected void sendRequest(DefaultHttpClient httpClient, HttpContext httpContext, HttpUriRequest request, String contentType,
-             AsyncHttpResponseHandler responseHandler) {
+             AsyncHttpResponseHandler responseHandler, Context context) {
         if (request == null) {
             throw new IllegalArgumentException("HttpUriRequest must not be null");
         }
@@ -195,10 +196,15 @@ public class AsyncHttpClient {
         }
 
         if (contentType != null) {
-            request.setHeader(HEADER_CONTENT_TYPE, contentType);
+            request.addHeader(HEADER_CONTENT_TYPE, contentType);
         }
 
+        AsyncHttpRequest asyncHttpRequest = newAsyncHttpRequest(httpClient, httpContext, request, responseHandler);
+        threadPool.submit(asyncHttpRequest);
 
+        if (context != null) {
+
+        }
     }
 
     private HttpEntityEnclosingRequestBase addEntityToRequestBase(HttpEntityEnclosingRequestBase requestBase, HttpEntity entity) {
@@ -207,5 +213,9 @@ public class AsyncHttpClient {
         }
 
         return requestBase;
+    }
+
+    protected AsyncHttpRequest newAsyncHttpRequest(DefaultHttpClient client, HttpContext context, HttpUriRequest request, AsyncHttpResponseHandler responseHandler) {
+        return new AsyncHttpRequest(client, request, context, responseHandler);
     }
 }

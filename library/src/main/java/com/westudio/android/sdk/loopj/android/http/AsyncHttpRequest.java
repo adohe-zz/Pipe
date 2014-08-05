@@ -41,7 +41,16 @@ public class AsyncHttpRequest implements Runnable {
             return;
         }
 
+        makeRequestWithExceptionsHandling();
 
+        if (isCancelled()) {
+            return;
+        }
+
+        if (responseHandler != null)
+            responseHandler.sendFinishMessage();
+
+        isFinished = true;
     }
 
     private void makeRequest() throws IOException {
