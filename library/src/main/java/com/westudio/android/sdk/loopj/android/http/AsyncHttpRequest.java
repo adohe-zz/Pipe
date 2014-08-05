@@ -56,7 +56,7 @@ public class AsyncHttpRequest implements Runnable {
         HttpResponse response = httpClient.execute(request, httpContext);
 
         if (!isCancelled() && responseHandler != null) {
-
+            responseHandler.sendResponseMessage(response);
         }
     }
 
