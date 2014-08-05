@@ -1,11 +1,19 @@
 package com.westudio.android.sdk.loopj.android.http;
 
+import android.content.Context;
+
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.HttpVersion;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.conn.params.ConnPerRouteBean;
 import org.apache.http.conn.scheme.PlainSocketFactory;
@@ -16,12 +24,14 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.SyncBasicHttpContext;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -39,8 +49,8 @@ public class AsyncHttpClient {
     private static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
     private static final String ENCODING_GZIP = "gzip";
 
-    private static int maxConnections = DEFAULT_MAX_CONNECTIONS;
-    private static int timeout = DEFAULT_SOCKET_TIMEOUT;
+    private int maxConnections = DEFAULT_MAX_CONNECTIONS;
+    private int timeout = DEFAULT_SOCKET_TIMEOUT;
 
     private final DefaultHttpClient httpClient;
     private final HttpContext httpContext;
@@ -90,5 +100,112 @@ public class AsyncHttpClient {
 
     protected ExecutorService getDefaultThreadPool() {
         return Executors.newCachedThreadPool();
+    }
+
+    public HttpClient getHttpClient() {
+        return this.httpClient;
+    }
+
+    public HttpContext getHttpContext() {
+        return this.httpContext;
+    }
+
+    public void setThreadPool(ExecutorService threadPool) {
+        this.threadPool = threadPool;
+    }
+
+    public ExecutorService getThreadPool() {
+        return this.threadPool;
+    }
+
+    public int getMaxConnections() {
+        return this.maxConnections;
+    }
+
+    public void setMaxConnections(final int maxConnections) {
+        if (maxConnections < 1)
+            this.maxConnections = DEFAULT_MAX_CONNECTIONS;
+        this.maxConnections = maxConnections;
+        final HttpParams httpParams = this.httpClient.getParams();
+        ConnManagerParams.setMaxConnectionsPerRoute(httpParams, new ConnPerRouteBean(this.maxConnections));
+    }
+
+    public int getTimeout() {
+        return this.timeout;
+    }
+
+    public void setTimeout(int timeout) {
+        if (timeout < 1000)
+            this.timeout = DEFAULT_SOCKET_TIMEOUT;
+        this.timeout = timeout;
+        final HttpParams httpParams = this.httpClient.getParams();
+        ConnManagerParams.setTimeout(httpParams, this.timeout);
+        HttpConnectionParams.setConnectionTimeout(httpParams, this.timeout);
+        HttpConnectionParams.setSoTimeout(httpParams, this.timeout);
+    }
+
+    public void removeAllHeaders() {
+        clientHeaderMap.clear();
+    }
+
+    public void addHeader(String header, String value) {
+        clientHeaderMap.put(header, value);
+    }
+
+    public void removeHeader(String header) {
+        clientHeaderMap.remove(header);
+    }
+
+    public void post(String url, AsyncHttpResponseHandler responseHandler) {
+
+    }
+
+    public void post(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
+
+    }
+
+    public void post(Context context, String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
+
+    }
+
+    public void post(Context context, String url, RequestParams params, String contentType, AsyncHttpResponseHandler responseHandler) {
+
+    }
+
+    public void post(Context context, String url, Header[] headers, RequestParams params, String contentType,
+            AsyncHttpResponseHandler responseHandler) {
+
+    }
+
+    public void post(Context context, String url, Header[] headers, HttpEntity entity, String contentType,
+            AsyncHttpResponseHandler responseHandler) {
+        HttpEntityEnclosingRequestBase request = addEntityToRequestBase(new HttpPost(URI.create(url).normalize()), entity);
+        if (headers != null)
+            request.setHeaders(headers);
+    }
+
+    protected void sendRequest(DefaultHttpClient httpClient, HttpContext httpContext, HttpUriRequest request, String contentType,
+             AsyncHttpResponseHandler responseHandler) {
+        if (request == null) {
+            throw new IllegalArgumentException("HttpUriRequest must not be null");
+        }
+
+        if (responseHandler == null) {
+            throw new IllegalArgumentException("AsyncHttpResponseHandler must not be null");
+        }
+
+        if (contentType != null) {
+            request.setHeader(HEADER_CONTENT_TYPE, contentType);
+        }
+
+
+    }
+
+    private HttpEntityEnclosingRequestBase addEntityToRequestBase(HttpEntityEnclosingRequestBase requestBase, HttpEntity entity) {
+        if (entity != null) {
+            requestBase.setEntity(entity);
+        }
+
+        return requestBase;
     }
 }
