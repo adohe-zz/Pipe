@@ -43,21 +43,17 @@ public class AsyncHttpResponseHandler implements ResponseHandlerInterface {
 
     @Override
     public void sendFinishMessage() {
-
     }
 
     @Override
     public void sendCancelMessage() {
-
     }
 
     @Override
     public void sendSuccessMessage(int statusCode, Header[] headers, byte[] responseBody) {
-
     }
 
     @Override
     public void sendFailureMessage(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-
     }
 }
