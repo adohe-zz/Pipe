@@ -22,4 +22,9 @@ public class ServiceClient {
 
         return client;
     }
+
+    // The only request interface
+    public void invoke(Object requestObj, ServiceCallback<?> callback, Class<?> clazz) {
+
+    }
 }
