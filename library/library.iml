@@ -62,6 +62,14 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 20, L preview Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" exported="" name="snappy-java-1.0.5" level="project" />
+    <orderEntry type="library" exported="" name="jackson-core-asl-1.9.13" level="project" />
+    <orderEntry type="library" exported="" name="xz-1.0" level="project" />
+    <orderEntry type="library" exported="" name="paranamer-2.3" level="project" />
+    <orderEntry type="library" exported="" name="slf4j-api-1.6.4" level="project" />
+    <orderEntry type="library" exported="" name="avro-1.7.7" level="project" />
+    <orderEntry type="library" exported="" name="jackson-mapper-asl-1.9.13" level="project" />
+    <orderEntry type="library" exported="" name="commons-compress-1.4.1" level="project" />
   </component>
 </module>
 
