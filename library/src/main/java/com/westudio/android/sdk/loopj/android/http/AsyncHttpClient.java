@@ -203,7 +203,6 @@ public class AsyncHttpClient {
         threadPool.submit(asyncHttpRequest);
 
         if (context != null) {
-
         }
     }
 

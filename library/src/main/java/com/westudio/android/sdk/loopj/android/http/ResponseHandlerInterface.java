@@ -7,13 +7,13 @@ import java.io.IOException;
 
 public interface ResponseHandlerInterface {
 
-    void sendResponseMessage(HttpResponse response) throws IOException;
+    void sendResponseMessage(HttpResponse response);
 
     void sendFinishMessage();
 
     void sendCancelMessage();
 
-    void sendSuccessMessage(int statusCode, Header[] headers, byte[] responseBody);
+    void sendSuccessMessage(int statusCode, Header[] headers, String responseBody);
 
-    void sendFailureMessage(int statusCode, Header[] headers, byte[] responseBody, Throwable error);
+    void sendFailureMessage(int statusCode, Header[] headers, String responseBody, Throwable error);
 }

@@ -26,7 +26,7 @@ public class AsyncHttpResponseHandler implements ResponseHandlerInterface {
     private Looper looper = null;
 
     @Override
-    public void sendResponseMessage(HttpResponse response) throws IOException {
+    public void sendResponseMessage(HttpResponse response) {
         StatusLine statusLine = response.getStatusLine();
         String responseBody = null;
         try {
@@ -50,10 +50,10 @@ public class AsyncHttpResponseHandler implements ResponseHandlerInterface {
     }
 
     @Override
-    public void sendSuccessMessage(int statusCode, Header[] headers, byte[] responseBody) {
+    public void sendSuccessMessage(int statusCode, Header[] headers, String responseBody) {
     }
 
     @Override
-    public void sendFailureMessage(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+    public void sendFailureMessage(int statusCode, Header[] headers, String responseBody, Throwable error) {
     }
 }
