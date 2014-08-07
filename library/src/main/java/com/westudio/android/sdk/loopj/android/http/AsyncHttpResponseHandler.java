@@ -72,7 +72,7 @@ public class AsyncHttpResponseHandler implements ResponseHandlerInterface {
 
     protected void handleMessage(Message msg) {
         Object[] response;
-        
+
     }
 
     protected void sendMessage(Message msg) {
