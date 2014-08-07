@@ -1,7 +1,6 @@
 package com.westudio.android.sdk.loopj.android.http;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.protocol.HttpContext;

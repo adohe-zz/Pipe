@@ -2,6 +2,7 @@ package com.westudio.android.sdk.http;
 
 import android.os.Message;
 
+import com.westudio.android.sdk.exceptions.ServiceClientError;
 import com.westudio.android.sdk.loopj.android.http.AsyncHttpResponseHandler;
 import com.westudio.android.sdk.uitls.Serializer;
 
@@ -34,9 +35,14 @@ public class ResponseHandler extends AsyncHttpResponseHandler {
         this.clazz = clazz;
     }
 
+    @Override
+    public void onFailure(Throwable error, String errorMsg) {
+        this.callback.onErrorResponse(new ServiceClientError(errorMsg, error));
+    }
+
     @SuppressWarnings("unchecked")
     protected void handleSuccessMessage(Object responseObject) {
-        callback.onResponse(responseObject);
+        this.callback.onResponse(responseObject);
     }
 
     protected void handleMessage(Message msg) {
