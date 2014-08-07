@@ -2,6 +2,7 @@ package com.westudio.android.sdk.loopj.android.http;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -11,6 +12,7 @@ import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 public class AsyncHttpResponseHandler implements ResponseHandlerInterface {
 
@@ -25,8 +27,19 @@ public class AsyncHttpResponseHandler implements ResponseHandlerInterface {
 
     private Looper looper = null;
 
+    public AsyncHttpResponseHandler() {
+        if (Looper.myLooper() != null) {
+            this.handler = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    AsyncHttpResponseHandler.this.handleMessage(msg);
+                }
+            };
+        }
+    }
+
     @Override
-    public void sendResponseMessage(HttpResponse response) {
+    public void sendResponseMessage(HttpResponse response) throws IOException {
         StatusLine statusLine = response.getStatusLine();
         String responseBody = null;
         try {
@@ -50,10 +63,36 @@ public class AsyncHttpResponseHandler implements ResponseHandlerInterface {
     }
 
     @Override
-    public void sendSuccessMessage(int statusCode, Header[] headers, String responseBody) {
+    public void sendSuccessMessage(int statusCode, Header[] headers, InputStream is) {
     }
 
     @Override
     public void sendFailureMessage(int statusCode, Header[] headers, String responseBody, Throwable error) {
+    }
+
+    protected void handleMessage(Message msg) {
+        Object[] response;
+        
+    }
+
+    protected void sendMessage(Message msg) {
+        if (this.handler != null) {
+            this.handler.sendMessage(msg);
+        } else {
+            handleMessage(msg);
+        }
+    }
+
+    protected Message obtainMessage(int responseMessage, Object response) {
+        Message msg = null;
+        if (this.handler != null) {
+            msg = this.handler.obtainMessage(responseMessage, response);
+        } else {
+            msg = Message.obtain();
+            msg.what = responseMessage;
+            msg.obj = response;
+        }
+
+        return msg;
     }
 }
