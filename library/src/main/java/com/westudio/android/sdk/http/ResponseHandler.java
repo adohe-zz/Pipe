@@ -1,5 +1,7 @@
 package com.westudio.android.sdk.http;
 
+import android.os.Message;
+
 import com.westudio.android.sdk.loopj.android.http.AsyncHttpResponseHandler;
 import com.westudio.android.sdk.uitls.Serializer;
 
@@ -11,8 +13,8 @@ import org.apache.http.client.HttpResponseException;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.util.EntityUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class ResponseHandler extends AsyncHttpResponseHandler {
 
@@ -29,6 +31,17 @@ public class ResponseHandler extends AsyncHttpResponseHandler {
         super();
         this.callback = callback;
         this.clazz = clazz;
+    }
+
+    protected void handleMessage(Message msg) {
+        Object[] response;
+
+        switch (msg.what) {
+            case SUCCESS_RESPONSE_HANDLING_MESSAGE:
+                break;
+            case FAILURE_MESSAGE:
+                break;
+        }
     }
 
     @Override
@@ -51,15 +64,15 @@ public class ResponseHandler extends AsyncHttpResponseHandler {
             if (statusLine.getStatusCode() >= 300) {
                 sendFailureMessage(statusLine.getStatusCode(), response.getAllHeaders(), responseBody, new HttpResponseException(statusLine.getStatusCode(), statusLine.getReasonPhrase()));
             } else {
-                sendSuccessMessage(statusLine.getStatusCode(), response.getAllHeaders(), response.getEntity().getContent());
+                sendSuccessMessage(statusLine.getStatusCode(), response.getAllHeaders(), responseBody);
             }
         }
     }
 
     @Override
-    public void sendSuccessMessage(int statusCode, Header[] headers, InputStream is) {
+    public void sendSuccessMessage(int statusCode, Header[] headers, String responseBody) {
         try {
-            Object responseObj = serializer.deserialize(is);
+            Object responseObj = serializer.deserialize(new ByteArrayInputStream(responseBody.getBytes()));
             sendMessage(obtainMessage(SUCCESS_RESPONSE_HANDLING_MESSAGE, new Object[]{responseObj}));
         } catch (IOException e) {
             e.printStackTrace();
@@ -75,11 +88,9 @@ public class ResponseHandler extends AsyncHttpResponseHandler {
 
     @Override
     public void sendFinishMessage() {
-        super.sendFinishMessage();
     }
 
     @Override
     public void sendCancelMessage() {
-        super.sendCancelMessage();
     }
 }

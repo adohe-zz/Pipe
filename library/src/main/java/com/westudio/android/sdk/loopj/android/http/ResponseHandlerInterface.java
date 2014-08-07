@@ -14,7 +14,7 @@ public interface ResponseHandlerInterface {
 
     void sendCancelMessage();
 
-    void sendSuccessMessage(int statusCode, Header[] headers, InputStream is);
+    void sendSuccessMessage(int statusCode, Header[] headers, String responseBody);
 
     void sendFailureMessage(int statusCode, Header[] headers, String responseBody, Throwable error);
 }

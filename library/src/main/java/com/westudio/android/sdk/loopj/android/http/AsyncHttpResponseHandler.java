@@ -63,7 +63,7 @@ public class AsyncHttpResponseHandler implements ResponseHandlerInterface {
     }
 
     @Override
-    public void sendSuccessMessage(int statusCode, Header[] headers, InputStream is) {
+    public void sendSuccessMessage(int statusCode, Header[] headers, String responseBody) {
     }
 
     @Override
@@ -73,6 +73,13 @@ public class AsyncHttpResponseHandler implements ResponseHandlerInterface {
     protected void handleMessage(Message msg) {
         Object[] response;
 
+        switch (msg.what) {
+            case SUCCESS_MESSAGE:
+                response = (Object[])msg.obj;
+                break;
+            case FAILURE_MESSAGE:
+                break;
+        }
     }
 
     protected void sendMessage(Message msg) {
