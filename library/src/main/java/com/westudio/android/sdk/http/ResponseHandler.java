@@ -26,6 +26,7 @@ public class ResponseHandler extends AsyncHttpResponseHandler {
     private Class<?> clazz;
 
     private Serializer serializer = new Serializer();
+    private String charset = DEFAULT_CHARSET;
 
     public ResponseHandler(ServiceCallback callback, Class<?> clazz) {
         super();
@@ -33,8 +34,9 @@ public class ResponseHandler extends AsyncHttpResponseHandler {
         this.clazz = clazz;
     }
 
+    @SuppressWarnings("unchecked")
     protected void handleSuccessMessage(Object responseObject) {
-
+        callback.onResponse(responseObject);
     }
 
     protected void handleMessage(Message msg) {
@@ -46,6 +48,8 @@ public class ResponseHandler extends AsyncHttpResponseHandler {
                 handleSuccessMessage(response[0]);
                 break;
             case FAILURE_MESSAGE:
+                response = (Object[])msg.obj;
+                handleFailureMessage((Throwable)response[0], (String)response[1]);
                 break;
         }
     }
@@ -56,7 +60,7 @@ public class ResponseHandler extends AsyncHttpResponseHandler {
             StatusLine statusLine = response.getStatusLine();
             String responseBody = null;
             try {
-                HttpEntity entity = null;
+                HttpEntity entity;
                 HttpEntity temp = response.getEntity();
                 if (temp != null) {
                     entity = new BufferedHttpEntity(temp);
@@ -68,7 +72,7 @@ public class ResponseHandler extends AsyncHttpResponseHandler {
             }
 
             if (statusLine.getStatusCode() >= 300) {
-                sendFailureMessage(statusLine.getStatusCode(), response.getAllHeaders(), responseBody, new HttpResponseException(statusLine.getStatusCode(), statusLine.getReasonPhrase()));
+                sendFailureMessage(new HttpResponseException(statusLine.getStatusCode(), statusLine.getReasonPhrase()), "response exceptions", responseBody);
             } else {
                 sendSuccessMessage(statusLine.getStatusCode(), response.getAllHeaders(), responseBody);
             }
@@ -89,7 +93,20 @@ public class ResponseHandler extends AsyncHttpResponseHandler {
     public void sendFailureMessage(int statusCode, Header[] headers, String responseBody, Throwable error) {
     }
 
-    private void sendFailureMessage(Throwable e, String errorMessage, String responseBody) {
+    @Override
+    public void sendFailureMessage(Throwable e, String errorMessage, String responseBody) {
+        if (e instanceof HttpResponseException) {
+            HttpResponseException exception = (HttpResponseException)e;
+            if (exception.getStatusCode() >= 300 && responseBody != null) {
+                try {
+                    Object responseObj = serializer.deserialize(new ByteArrayInputStream(responseBody.getBytes(charset)));
+                    sendMessage(obtainMessage(SUCCESS_RESPONSE_HANDLING_MESSAGE, new Object[]{responseObj}));
+                    return;
+                } catch (IOException e1) {/**/}
+            }
+        }
+
+        sendMessage(obtainMessage(FAILURE_MESSAGE, new Object[]{e, errorMessage}));
     }
 
     @Override

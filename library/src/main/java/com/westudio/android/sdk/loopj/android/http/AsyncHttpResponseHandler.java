@@ -8,11 +8,11 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 public class AsyncHttpResponseHandler implements ResponseHandlerInterface {
 
@@ -22,10 +22,8 @@ public class AsyncHttpResponseHandler implements ResponseHandlerInterface {
     protected static final int FAILURE_MESSAGE = 1;
 
     public static final String DEFAULT_CHARSET = "UTF-8";
-    private String responseCharset = DEFAULT_CHARSET;
-    private Handler handler;
 
-    private Looper looper = null;
+    private Handler handler;
 
     public AsyncHttpResponseHandler() {
         if (Looper.myLooper() != null) {
@@ -38,19 +36,43 @@ public class AsyncHttpResponseHandler implements ResponseHandlerInterface {
         }
     }
 
+    public void onSuccess(String content) {
+    }
+
+    public void onSuccess(int statusCode, Header[] headers, String content) {
+        onSuccess(statusCode, content);
+    }
+
+    public void onSuccess(int statusCode, String content) {
+        onSuccess(content);
+    }
+
+    public void onFailure(Throwable error) {
+    }
+
+    public void onFailure(Throwable error, String content) {
+        onFailure(error);
+    }
+
     @Override
     public void sendResponseMessage(HttpResponse response) throws IOException {
         StatusLine statusLine = response.getStatusLine();
         String responseBody = null;
         try {
-            HttpEntity entity = null;
+            HttpEntity entity;
             HttpEntity temp = response.getEntity();
             if (temp != null) {
                 entity = new BufferedHttpEntity(temp);
                 responseBody = EntityUtils.toString(entity, "UTF-8");
             }
         } catch (IOException e) {
+            sendFailureMessage(e, "error to get response body", responseBody);
+        }
 
+        if (statusLine.getStatusCode() >= 300) {
+            sendFailureMessage(new HttpResponseException(statusLine.getStatusCode(), statusLine.getReasonPhrase()), "response exception", responseBody);
+        } else {
+            sendSuccessMessage(statusLine.getStatusCode(), response.getAllHeaders(), responseBody);
         }
     }
 
@@ -64,10 +86,25 @@ public class AsyncHttpResponseHandler implements ResponseHandlerInterface {
 
     @Override
     public void sendSuccessMessage(int statusCode, Header[] headers, String responseBody) {
+        sendMessage(obtainMessage(SUCCESS_MESSAGE, new Object[]{statusCode, headers, responseBody}));
     }
 
     @Override
     public void sendFailureMessage(int statusCode, Header[] headers, String responseBody, Throwable error) {
+    }
+
+    @Override
+    public void sendFailureMessage(Throwable e, String errorMessage, String responseBody) {
+        sendMessage(obtainMessage(FAILURE_MESSAGE, new Object[]{e, errorMessage, responseBody}));
+    }
+
+    protected void handleSuccessMessage(int statusCode, Header[] headers, String responseBody) {
+        onSuccess(statusCode, headers, responseBody);
+    }
+
+    protected void handleFailureMessage(Throwable e, String errorMessage) {
+        onFailure(e, errorMessage);
+
     }
 
     protected void handleMessage(Message msg) {
@@ -76,8 +113,11 @@ public class AsyncHttpResponseHandler implements ResponseHandlerInterface {
         switch (msg.what) {
             case SUCCESS_MESSAGE:
                 response = (Object[])msg.obj;
+                handleSuccessMessage((Integer)response[0], (Header[])response[1], (String)response[2]);
                 break;
             case FAILURE_MESSAGE:
+                response = (Object[])msg.obj;
+                handleFailureMessage((Throwable)response[0], (String)response[1]);
                 break;
         }
     }
@@ -91,7 +131,7 @@ public class AsyncHttpResponseHandler implements ResponseHandlerInterface {
     }
 
     protected Message obtainMessage(int responseMessage, Object response) {
-        Message msg = null;
+        Message msg;
         if (this.handler != null) {
             msg = this.handler.obtainMessage(responseMessage, response);
         } else {
