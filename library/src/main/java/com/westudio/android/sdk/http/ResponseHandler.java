@@ -33,11 +33,17 @@ public class ResponseHandler extends AsyncHttpResponseHandler {
         this.clazz = clazz;
     }
 
+    protected void handleSuccessMessage(Object responseObject) {
+
+    }
+
     protected void handleMessage(Message msg) {
         Object[] response;
 
         switch (msg.what) {
             case SUCCESS_RESPONSE_HANDLING_MESSAGE:
+                response = (Object[])msg.obj;
+                handleSuccessMessage(response[0]);
                 break;
             case FAILURE_MESSAGE:
                 break;
