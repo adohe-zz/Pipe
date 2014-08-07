@@ -57,7 +57,9 @@ public class ServiceClient {
             HttpEntity httpEntity = new ByteArrayEntity(os.toByteArray());
             String url = generateUrl(opName);
 
-            httpClient.post(null, url, null, httpEntity, CONTENT_TYPE, null);
+            ResponseHandler handler = new ResponseHandler(callback, clazz);
+
+            httpClient.post(null, url, null, httpEntity, CONTENT_TYPE, handler);
         } catch (IOException e) {
             e.printStackTrace();
         }
