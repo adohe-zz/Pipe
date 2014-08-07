@@ -1,6 +1,7 @@
 package com.westudio.android.sdk.loopj.android.http;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.protocol.HttpContext;
@@ -16,6 +17,9 @@ public class AsyncHttpRequest implements Runnable {
     private final HttpUriRequest request;
     private final HttpContext httpContext;
     private final AsyncHttpResponseHandler responseHandler;
+
+    private boolean isCancelled = false;
+    private boolean isFinished = false;
 
     public AsyncHttpRequest(AbstractHttpClient httpClient, HttpUriRequest request, HttpContext httpContext, AsyncHttpResponseHandler responseHandler) {
         this.httpClient = httpClient;
@@ -37,6 +41,8 @@ public class AsyncHttpRequest implements Runnable {
                     if (response != null) {
                         responseHandler.sendResponseMessage(response);
                     }
+                } else {
+                    // SOME POTENTIAL BUGS
                 }
             } catch (IOException e) {
                 if (!Thread.currentThread().isInterrupted()) {
@@ -46,6 +52,7 @@ public class AsyncHttpRequest implements Runnable {
         }
     }
 
+    //TODO:ADD RESPONSE HANDLER SEND FAILURE MESSAGE
     private void makeRequestWithExceptionsHandling() {
         try {
             makeRequest();
@@ -63,5 +70,22 @@ public class AsyncHttpRequest implements Runnable {
         } catch (Throwable t) {
 
         }
+    }
+
+    public boolean isCancelled() {
+        if (isCancelled) {
+        }
+
+        return isCancelled;
+    }
+
+    public boolean isDone() {
+        return isCancelled() || isFinished;
+    }
+
+    public boolean cancel(boolean mayInterrupting) {
+        isCancelled = true;
+        request.abort();
+        return isCancelled();
     }
 }
