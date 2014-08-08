@@ -31,11 +31,16 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.SyncBasicHttpContext;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class AsyncHttpClient {
 
@@ -56,6 +61,7 @@ public class AsyncHttpClient {
     private final HttpContext httpContext;
     private ExecutorService threadPool;
     private final Map<String, String> clientHeaderMap;
+    private final Map<Context, List<WeakReference<Future<?>>>> requestMap;
 
     public AsyncHttpClient() {
 
@@ -96,6 +102,7 @@ public class AsyncHttpClient {
 
         threadPool = getDefaultThreadPool();
         clientHeaderMap = new HashMap<String, String>();
+        requestMap = new WeakHashMap<Context, List<WeakReference<Future<?>>>>();
     }
 
     protected ExecutorService getDefaultThreadPool() {
@@ -157,14 +164,18 @@ public class AsyncHttpClient {
     }
 
     public void post(String url, AsyncHttpResponseHandler responseHandler) {
-
+        post(null, url, null, responseHandler);
     }
 
     public void post(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
-
+        post(null, url, params, responseHandler);
     }
 
     public void post(Context context, String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
+
+    }
+
+    public void post(Context context, String url, HttpEntity entity, String contentType, AsyncHttpResponseHandler responseHandler) {
 
     }
 
@@ -200,9 +211,17 @@ public class AsyncHttpClient {
         }
 
         AsyncHttpRequest asyncHttpRequest = newAsyncHttpRequest(httpClient, httpContext, request, responseHandler);
-        threadPool.submit(asyncHttpRequest);
+        Future<?> req = threadPool.submit(asyncHttpRequest);
 
         if (context != null) {
+            List<WeakReference<Future<?>>> list = requestMap.get(context);
+            if (list == null) {
+                list = new LinkedList<WeakReference<Future<?>>>();
+                requestMap.put(context, list);
+            }
+
+            list.add(new WeakReference<Future<?>>(req));
+            // Any problems?
         }
     }
 
