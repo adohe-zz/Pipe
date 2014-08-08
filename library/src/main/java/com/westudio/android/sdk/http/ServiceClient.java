@@ -19,7 +19,7 @@ public class ServiceClient {
     private final Serializer serializer_ = new Serializer();
 
     private static final String FORMAT = "json";
-    private static final String CONTENT_TYPE = "text/html; charset=utf-8";
+    private static final String CONTENT_TYPE = "application/json";
 
     private ServiceClient() {
         httpClient = new AsyncHttpClient();
