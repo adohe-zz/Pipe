@@ -1,5 +1,6 @@
 package com.westudio.android.sdk.uitls;
 
+import org.apache.avro.SchemaBuilder;
 import org.apache.avro.io.Decoder;
 import org.apache.avro.io.DecoderFactory;
 import org.apache.avro.io.EncoderFactory;
@@ -28,7 +29,7 @@ public class Serializer {
     public <T extends SpecificRecordBase> T deserialize(InputStream is) throws IOException {
         T obj = null;
 
-        Decoder decoder = DecoderFactory.get().jsonDecoder(obj.getSchema(), is);
+        Decoder decoder = DecoderFactory.get().jsonDecoder(, is);
         SpecificDatumReader<T> reader = new SpecificDatumReader<T>();
 
         reader.read(obj, decoder);
