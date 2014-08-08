@@ -6,6 +6,7 @@ import com.westudio.android.sdk.exceptions.ServiceClientError;
 import com.westudio.android.sdk.loopj.android.http.AsyncHttpResponseHandler;
 import com.westudio.android.sdk.uitls.Serializer;
 
+import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -24,12 +25,12 @@ public class ResponseHandler extends AsyncHttpResponseHandler {
     protected static final int SUCCESS_RESPONSE_HANDLING_MESSAGE = 100;
 
     private ServiceCallback callback;
-    private Class<?> clazz;
+    private Class<? extends SpecificRecordBase> clazz;
 
     private Serializer serializer = new Serializer();
     private String charset = DEFAULT_CHARSET;
 
-    public ResponseHandler(ServiceCallback callback, Class<?> clazz) {
+    public ResponseHandler(ServiceCallback callback, Class<? extends SpecificRecordBase> clazz) {
         super();
         this.callback = callback;
         this.clazz = clazz;
@@ -88,7 +89,7 @@ public class ResponseHandler extends AsyncHttpResponseHandler {
     @Override
     public void sendSuccessMessage(int statusCode, Header[] headers, String responseBody) {
         try {
-            Object responseObj = serializer.deserialize(new ByteArrayInputStream(responseBody.getBytes()));
+            Object responseObj = serializer.deserialize(new ByteArrayInputStream(responseBody.getBytes()), clazz);
             sendMessage(obtainMessage(SUCCESS_RESPONSE_HANDLING_MESSAGE, new Object[]{responseObj}));
         } catch (IOException e) {
             e.printStackTrace();
@@ -105,7 +106,7 @@ public class ResponseHandler extends AsyncHttpResponseHandler {
             HttpResponseException exception = (HttpResponseException)e;
             if (exception.getStatusCode() >= 300 && responseBody != null) {
                 try {
-                    Object responseObj = serializer.deserialize(new ByteArrayInputStream(responseBody.getBytes(charset)));
+                    Object responseObj = serializer.deserialize(new ByteArrayInputStream(responseBody.getBytes(charset)), clazz);
                     sendMessage(obtainMessage(SUCCESS_RESPONSE_HANDLING_MESSAGE, new Object[]{responseObj}));
                     return;
                 } catch (IOException e1) {/**/}

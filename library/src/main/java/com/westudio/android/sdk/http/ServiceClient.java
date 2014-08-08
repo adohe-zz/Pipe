@@ -38,7 +38,7 @@ public class ServiceClient {
     }
 
     // The only request interface
-    public <T extends SpecificRecordBase, W extends SpecificRecordBase> void invoke(T requestObj, String opName, Class<W> clazz, ServiceCallback<W> callback) {
+    public <T extends SpecificRecordBase, W extends SpecificRecordBase> void invoke(T requestObj, String opName, Class<W> responseType, ServiceCallback<W> callback) {
 
         try {
             if (serviceUrl == null) {
@@ -49,7 +49,7 @@ public class ServiceClient {
                 throw new IllegalArgumentException("callback is missing");
             }
 
-            if (clazz == null) {
+            if (responseType == null) {
                 throw new IllegalArgumentException("target bind class is missing");
             }
 
@@ -57,7 +57,7 @@ public class ServiceClient {
             HttpEntity httpEntity = new ByteArrayEntity(os.toByteArray());
             String url = generateUrl(opName);
 
-            ResponseHandler handler = new ResponseHandler(callback, clazz);
+            ResponseHandler handler = new ResponseHandler(callback, responseType);
 
             httpClient.post(null, url, null, httpEntity, CONTENT_TYPE, handler);
         } catch (IOException e) {
