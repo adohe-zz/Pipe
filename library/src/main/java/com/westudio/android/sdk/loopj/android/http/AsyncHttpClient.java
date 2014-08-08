@@ -89,14 +89,14 @@ public class AsyncHttpClient {
         httpClient.addRequestInterceptor(new HttpRequestInterceptor() {
             @Override
             public void process(HttpRequest httpRequest, HttpContext httpContext) throws HttpException, IOException {
-
+                //TODO:ADD REQUEST HEADER
             }
         });
 
         httpClient.addResponseInterceptor(new HttpResponseInterceptor() {
             @Override
             public void process(HttpResponse httpResponse, HttpContext httpContext) throws HttpException, IOException {
-
+                //TODO:GZIP SUPPORT
             }
         });
 
@@ -224,7 +224,7 @@ public class AsyncHttpClient {
             }
 
             list.add(new WeakReference<Future<?>>(req));
-            // Any problems?
+            // Any problems, remove dead ref?
         }
     }
 

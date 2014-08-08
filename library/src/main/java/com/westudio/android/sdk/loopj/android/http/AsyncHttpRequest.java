@@ -57,17 +57,29 @@ public class AsyncHttpRequest implements Runnable {
             makeRequest();
             return;
         } catch (UnknownHostException e) {
-
+            if (responseHandler != null) {
+                responseHandler.sendFailureMessage(e, "can't resolve host", null);
+            }
         } catch (SocketException e) {
-
+            if (responseHandler != null) {
+                responseHandler.sendFailureMessage(e, "can't resolve host", null);
+            }
         } catch (SocketTimeoutException e) {
-
+            if (responseHandler != null) {
+                responseHandler.sendFailureMessage(e, "time out exception", null);
+            }
         } catch (IOException e) {
-
+            if (responseHandler != null) {
+                responseHandler.sendFailureMessage(e, "io exception", null);
+            }
         } catch (NullPointerException e) {
-
+            if (responseHandler != null) {
+                responseHandler.sendFailureMessage(e, "null pointer exception", null);
+            }
         } catch (Throwable t) {
-
+            if (responseHandler != null) {
+                responseHandler.sendFailureMessage(t, "connect exception", null);
+            }
         }
     }
 
