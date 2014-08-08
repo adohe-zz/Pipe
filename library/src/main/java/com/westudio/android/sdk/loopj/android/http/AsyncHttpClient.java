@@ -172,20 +172,23 @@ public class AsyncHttpClient {
     }
 
     public void post(Context context, String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
-
+        post(context, url, paramsToEntity(params), null, responseHandler);
     }
 
     public void post(Context context, String url, HttpEntity entity, String contentType, AsyncHttpResponseHandler responseHandler) {
-
+        sendRequest(httpClient, httpContext, addEntityToRequestBase(new HttpPost(URI.create(url).normalize()), entity), contentType, responseHandler, context);
     }
 
     public void post(Context context, String url, RequestParams params, String contentType, AsyncHttpResponseHandler responseHandler) {
-
+        post(context, url, paramsToEntity(params), contentType, responseHandler);
     }
 
     public void post(Context context, String url, Header[] headers, RequestParams params, String contentType,
             AsyncHttpResponseHandler responseHandler) {
-
+        HttpEntityEnclosingRequestBase requestBase = new HttpPost(URI.create(url).normalize());
+        if (params != null) requestBase.setEntity(paramsToEntity(params));
+        if (headers != null) requestBase.setHeaders(headers);
+        sendRequest(httpClient, httpContext, requestBase, contentType, responseHandler, context);
     }
 
     public void post(Context context, String url, Header[] headers, HttpEntity entity, String contentType,
@@ -235,5 +238,14 @@ public class AsyncHttpClient {
 
     protected AsyncHttpRequest newAsyncHttpRequest(DefaultHttpClient client, HttpContext context, HttpUriRequest request, AsyncHttpResponseHandler responseHandler) {
         return new AsyncHttpRequest(client, request, context, responseHandler);
+    }
+
+    private HttpEntity paramsToEntity(RequestParams params) {
+        HttpEntity entity = null;
+        if (params != null) {
+            entity = params.getEntity();
+        }
+
+        return entity;
     }
 }
