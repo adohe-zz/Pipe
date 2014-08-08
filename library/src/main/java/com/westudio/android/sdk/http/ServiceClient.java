@@ -19,7 +19,7 @@ public class ServiceClient {
     private final Serializer serializer_ = new Serializer();
 
     private static final String FORMAT = "json";
-    private static final String CONTENT_TYPE = "application/json";
+    private static final String CONTENT_TYPE = "text/html; charset=utf-8";
 
     private ServiceClient() {
         httpClient = new AsyncHttpClient();
@@ -38,7 +38,7 @@ public class ServiceClient {
     }
 
     // The only request interface
-    public <T extends SpecificRecordBase, W extends SpecificRecordBase> void invoke(T requestObj, String opName, Class<W> responseType, ServiceCallback<W> callback) {
+    public <T extends SpecificRecordBase, W extends SpecificRecordBase> void invoke(T requestObj, String opName, Class<T> requestType, Class<W> responseType, ServiceCallback<W> callback) {
 
         try {
             if (serviceUrl == null) {
@@ -53,9 +53,9 @@ public class ServiceClient {
                 throw new IllegalArgumentException("target bind class is missing");
             }
 
-            ByteArrayOutputStream os = serializer_.serializer(requestObj);
+            ByteArrayOutputStream os = serializer_.serializer(requestObj, requestType);
             HttpEntity httpEntity = new ByteArrayEntity(os.toByteArray());
-            String url = generateUrl(opName);
+            String url = serviceUrl;
 
             ResponseHandler handler = new ResponseHandler(callback, responseType);
 

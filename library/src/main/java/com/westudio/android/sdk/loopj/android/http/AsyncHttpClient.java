@@ -12,6 +12,7 @@ import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.params.ConnManagerParams;
@@ -77,7 +78,7 @@ public class AsyncHttpClient {
         HttpConnectionParams.setSocketBufferSize(httpParams, DEFAULT_BUFFER_SIZE);
 
         HttpProtocolParams.setVersion(httpParams, HttpVersion.HTTP_1_1);
-        HttpProtocolParams.setUserAgent(httpParams, "");
+        HttpProtocolParams.setUserAgent(httpParams, "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2107.3 Safari/537.36");
 
         SchemeRegistry registry = new SchemeRegistry();
         registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
@@ -193,7 +194,8 @@ public class AsyncHttpClient {
 
     public void post(Context context, String url, Header[] headers, HttpEntity entity, String contentType,
             AsyncHttpResponseHandler responseHandler) {
-        HttpEntityEnclosingRequestBase request = addEntityToRequestBase(new HttpPost(URI.create(url).normalize()), entity);
+        HttpEntityEnclosingRequestBase request = addEntityToRequestBase(new HttpPost(url), entity);
+        //HttpUriRequest request = new HttpGet(url);
         if (headers != null)
             request.setHeaders(headers);
         sendRequest(httpClient, httpContext, request, contentType, responseHandler, context);

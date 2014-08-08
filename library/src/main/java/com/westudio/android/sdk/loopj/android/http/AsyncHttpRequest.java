@@ -1,5 +1,7 @@
 package com.westudio.android.sdk.loopj.android.http;
 
+import android.util.Log;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.AbstractHttpClient;
@@ -35,6 +37,7 @@ public class AsyncHttpRequest implements Runnable {
     private void makeRequest() throws IOException {
         if (!Thread.currentThread().isInterrupted()) {
             try {
+                System.out.println("Here");
                 HttpResponse response = httpClient.execute(request, httpContext);
                 if (!Thread.currentThread().isInterrupted()) {
                     if (response != null) {
@@ -57,22 +60,27 @@ public class AsyncHttpRequest implements Runnable {
             makeRequest();
             return;
         } catch (UnknownHostException e) {
+            Log.e("nai", "f", e);
             if (responseHandler != null) {
                 responseHandler.sendFailureMessage(e, "can't resolve host", null);
             }
         } catch (SocketException e) {
+            Log.e("ladk", "faadljjld", e);
             if (responseHandler != null) {
-                responseHandler.sendFailureMessage(e, "can't resolve host", null);
+                responseHandler.sendFailureMessage(e, "socket exception", null);
             }
         } catch (SocketTimeoutException e) {
+            Log.e("dds", "dd", e);
             if (responseHandler != null) {
                 responseHandler.sendFailureMessage(e, "time out exception", null);
             }
         } catch (IOException e) {
+            Log.e("dsdasd", "faljjld", e);
             if (responseHandler != null) {
                 responseHandler.sendFailureMessage(e, "io exception", null);
             }
         } catch (NullPointerException e) {
+            Log.e("nai", "faljjld", e);
             if (responseHandler != null) {
                 responseHandler.sendFailureMessage(e, "null pointer exception", null);
             }

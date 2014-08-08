@@ -16,10 +16,13 @@ import java.lang.reflect.InvocationTargetException;
 
 public class Serializer {
 
-    public <T extends SpecificRecordBase> ByteArrayOutputStream serializer(T request) throws IOException {
-        SpecificDatumWriter<T> writer = new SpecificDatumWriter<T>();
+    public <T extends SpecificRecordBase> ByteArrayOutputStream serializer(T request, Class<T> clazz) throws IOException {
+        SpecificDatumWriter<T> writer = new SpecificDatumWriter<T>(clazz);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
 
+        if (request.getSchema() == null) {
+            System.out.println("Null");
+        }
         JsonEncoder encoder = EncoderFactory.get().jsonEncoder(request.getSchema(), os);
         writer.write(request, encoder);
         encoder.flush();

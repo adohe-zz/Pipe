@@ -4,18 +4,60 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
+import com.westudio.android.protocol.AdRequest;
+import com.westudio.android.protocol.AdResponse;
+import com.westudio.android.protocol.Person;
+import com.westudio.android.sdk.exceptions.ServiceClientError;
+import com.westudio.android.sdk.http.ServiceCallback;
 import com.westudio.android.sdk.http.ServiceClient;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    private Button btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ServiceClient client = ServiceClient.getInstance();
+        btn = (Button)findViewById(R.id.button);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ServiceClient client = ServiceClient.getInstance();
+                client.setServiceUrl("http://172.16.144.109:3281");
+
+                // mock a AdRequest instance
+                AdRequest request = null;
+                Person p = new Person();
+                p.setAddress1("China");
+                p.setAddress2("Shanghai");
+                p.setCity("Huangpu");
+                p.setCountry("China");
+                p.setFirstName("Tony");
+                p.setId(1);
+                p.setLastName("He");
+                p.setPostCode("021");
+                request = AdRequest.newBuilder().setAdBB("BeepBoop").setPerson(p).build();
+                client.invoke(request, "", AdRequest.class, AdResponse.class, new ServiceCallback<AdResponse>() {
+                    @Override
+                    public void onResponse(AdResponse response) {
+
+                        Toast.makeText(MainActivity.this, response.getAds().get(0).getAddress1(), Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onErrorResponse(ServiceClientError error) {
+                        Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
 
 
