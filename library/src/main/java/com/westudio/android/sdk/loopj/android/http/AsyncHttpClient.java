@@ -12,7 +12,6 @@ import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.params.ConnManagerParams;
@@ -195,7 +194,6 @@ public class AsyncHttpClient {
     public void post(Context context, String url, Header[] headers, HttpEntity entity, String contentType,
             AsyncHttpResponseHandler responseHandler) {
         HttpEntityEnclosingRequestBase request = addEntityToRequestBase(new HttpPost(url), entity);
-        //HttpUriRequest request = new HttpGet(url);
         if (headers != null)
             request.setHeaders(headers);
         sendRequest(httpClient, httpContext, request, contentType, responseHandler, context);
