@@ -20,9 +20,6 @@ public class Serializer {
         SpecificDatumWriter<T> writer = new SpecificDatumWriter<T>(clazz);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-        if (request.getSchema() == null) {
-            System.out.println("Null");
-        }
         JsonEncoder encoder = EncoderFactory.get().jsonEncoder(request.getSchema(), os);
         writer.write(request, encoder);
         encoder.flush();
