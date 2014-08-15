@@ -1,6 +1,5 @@
 package com.westudio.android.sdk.utils;
 
-import org.apache.avro.Schema;
 import org.apache.avro.io.Decoder;
 import org.apache.avro.io.DecoderFactory;
 import org.apache.avro.io.EncoderFactory;
@@ -12,7 +11,6 @@ import org.apache.avro.specific.SpecificRecordBase;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 
 public class Serializer {
 
@@ -28,22 +26,20 @@ public class Serializer {
     }
 
     public <T extends SpecificRecordBase> T deserialize(InputStream is, Class<T> clazz) throws IOException {
-        T obj = null;
-
         try {
-            Object o = clazz.newInstance();
-            Decoder decoder = DecoderFactory.get().jsonDecoder((Schema)clazz.getDeclaredMethod("getSchema", null).invoke(o, null), is);
+            T obj;
+            obj = clazz.newInstance();
+            Decoder decoder;
+            //decoder = DecoderFactory.get().jsonDecoder((Schema)clazz.getDeclaredMethod("getSchema", new Class[]{}).invoke(obj, null), is);
+            decoder = DecoderFactory.get().jsonDecoder(obj.getSchema(), is);
             SpecificDatumReader<T> reader = new SpecificDatumReader<T>(clazz);
 
-            reader.read((T)o, decoder);
-            return (T)o;
+            reader.read(obj, decoder);
+            return obj;
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
         } catch (InstantiationException e) {
+            e.printStackTrace();
         }
 
         return null;
