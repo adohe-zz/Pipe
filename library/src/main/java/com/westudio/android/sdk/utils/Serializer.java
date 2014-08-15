@@ -31,18 +31,21 @@ public class Serializer {
         T obj = null;
 
         try {
-            Decoder decoder = DecoderFactory.get().jsonDecoder((Schema)clazz.getDeclaredMethod("getSchema").invoke(null), is);
-            SpecificDatumReader<T> reader = new SpecificDatumReader<T>();
+            Object o = clazz.newInstance();
+            Decoder decoder = DecoderFactory.get().jsonDecoder((Schema)clazz.getDeclaredMethod("getSchema", null).invoke(o, null), is);
+            SpecificDatumReader<T> reader = new SpecificDatumReader<T>(clazz);
 
-            reader.read(obj, decoder);
+            reader.read((T)o, decoder);
+            return (T)o;
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
+        } catch (InstantiationException e) {
         }
 
-        return obj;
+        return null;
     }
 }

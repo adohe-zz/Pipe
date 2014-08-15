@@ -47,8 +47,7 @@ public class MainActivity extends ActionBarActivity {
                 client.invoke(request, "", AdRequest.class, AdResponse.class, new ServiceCallback<AdResponse>() {
                     @Override
                     public void onResponse(AdResponse response) {
-                        System.out.println("beep boop");
-                        //Toast.makeText(MainActivity.this, response.getAds().get(0).getAddress1(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, response.getAds().get(0).getFirstName(), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override

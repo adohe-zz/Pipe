@@ -48,7 +48,6 @@ public class ResponseHandler extends AsyncHttpResponseHandler {
     }
 
     protected void handleMessage(Message msg) {
-        Log.v(LOG_TAG, "HandleMessage");
         Object[] response;
 
         switch (msg.what) {
@@ -65,7 +64,6 @@ public class ResponseHandler extends AsyncHttpResponseHandler {
 
     @Override
     public void sendResponseMessage(HttpResponse response) throws IOException {
-        Log.v("ResponseHandler", "response");
         if (!Thread.currentThread().isInterrupted()) {
             StatusLine statusLine = response.getStatusLine();
             String responseBody = null;
@@ -84,7 +82,6 @@ public class ResponseHandler extends AsyncHttpResponseHandler {
             if (statusLine.getStatusCode() >= 300) {
                 sendFailureMessage(new HttpResponseException(statusLine.getStatusCode(), statusLine.getReasonPhrase()), "response exceptions", responseBody);
             } else {
-                Log.v("ResponseHandler", "success");
                 sendSuccessMessage(statusLine.getStatusCode(), response.getAllHeaders(), responseBody);
             }
         }
@@ -94,6 +91,10 @@ public class ResponseHandler extends AsyncHttpResponseHandler {
     public void sendSuccessMessage(int statusCode, Header[] headers, String responseBody) {
         try {
             Object responseObj = serializer.deserialize(new ByteArrayInputStream(responseBody.getBytes()), clazz);
+            if (responseObj == null) {
+                //TODO:WHAT IF THE RESPONSE OBJ IS NULL?
+                Log.v(LOG_TAG, "response obj is null");
+            }
             sendMessage(obtainMessage(SUCCESS_RESPONSE_HANDLING_MESSAGE, new Object[]{responseObj}));
         } catch (IOException e) {
             e.printStackTrace();
