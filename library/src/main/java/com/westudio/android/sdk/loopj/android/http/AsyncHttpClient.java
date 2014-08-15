@@ -12,7 +12,6 @@ import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.params.ConnManagerParams;
@@ -130,9 +129,9 @@ public class AsyncHttpClient {
         return this.maxConnections;
     }
 
-    public void setMaxConnections(final int maxConnections) {
+    public void setMaxConnections(int maxConnections) {
         if (maxConnections < 1)
-            this.maxConnections = DEFAULT_MAX_CONNECTIONS;
+            maxConnections = DEFAULT_MAX_CONNECTIONS;
         this.maxConnections = maxConnections;
         final HttpParams httpParams = this.httpClient.getParams();
         ConnManagerParams.setMaxConnectionsPerRoute(httpParams, new ConnPerRouteBean(this.maxConnections));
@@ -144,7 +143,7 @@ public class AsyncHttpClient {
 
     public void setTimeout(int timeout) {
         if (timeout < 1000)
-            this.timeout = DEFAULT_SOCKET_TIMEOUT;
+            timeout = DEFAULT_SOCKET_TIMEOUT;
         this.timeout = timeout;
         final HttpParams httpParams = this.httpClient.getParams();
         ConnManagerParams.setTimeout(httpParams, this.timeout);
@@ -200,7 +199,7 @@ public class AsyncHttpClient {
         sendRequest(httpClient, httpContext, request, contentType, responseHandler, context);
     }
 
-    protected void sendRequest(DefaultHttpClient httpClient, HttpContext httpContext, HttpUriRequest request, String contentType,
+    private void sendRequest(DefaultHttpClient httpClient, HttpContext httpContext, HttpUriRequest request, String contentType,
              AsyncHttpResponseHandler responseHandler, Context context) {
         if (request == null) {
             throw new IllegalArgumentException("HttpUriRequest must not be null");
