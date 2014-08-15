@@ -30,7 +30,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View view) {
                 ServiceClient client = ServiceClient.getInstance();
-                client.setServiceUrl("http://172.16.144.109:3281");
+                client.setServiceUrl("http://10.16.200.34:8080");
 
                 // mock a AdRequest instance
                 AdRequest request = null;
@@ -47,8 +47,8 @@ public class MainActivity extends ActionBarActivity {
                 client.invoke(request, "", AdRequest.class, AdResponse.class, new ServiceCallback<AdResponse>() {
                     @Override
                     public void onResponse(AdResponse response) {
-
-                        Toast.makeText(MainActivity.this, response.getAds().get(0).getAddress1(), Toast.LENGTH_SHORT).show();
+                        System.out.println("beep boop");
+                        //Toast.makeText(MainActivity.this, response.getAds().get(0).getAddress1(), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override

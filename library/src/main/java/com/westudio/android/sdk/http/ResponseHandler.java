@@ -1,10 +1,11 @@
 package com.westudio.android.sdk.http;
 
 import android.os.Message;
+import android.util.Log;
 
 import com.westudio.android.sdk.exceptions.ServiceClientError;
 import com.westudio.android.sdk.loopj.android.http.AsyncHttpResponseHandler;
-import com.westudio.android.sdk.uitls.Serializer;
+import com.westudio.android.sdk.utils.Serializer;
 
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.http.Header;
@@ -47,6 +48,7 @@ public class ResponseHandler extends AsyncHttpResponseHandler {
     }
 
     protected void handleMessage(Message msg) {
+        Log.v(LOG_TAG, "HandleMessage");
         Object[] response;
 
         switch (msg.what) {
@@ -63,6 +65,7 @@ public class ResponseHandler extends AsyncHttpResponseHandler {
 
     @Override
     public void sendResponseMessage(HttpResponse response) throws IOException {
+        Log.v("ResponseHandler", "response");
         if (!Thread.currentThread().isInterrupted()) {
             StatusLine statusLine = response.getStatusLine();
             String responseBody = null;
@@ -81,6 +84,7 @@ public class ResponseHandler extends AsyncHttpResponseHandler {
             if (statusLine.getStatusCode() >= 300) {
                 sendFailureMessage(new HttpResponseException(statusLine.getStatusCode(), statusLine.getReasonPhrase()), "response exceptions", responseBody);
             } else {
+                Log.v("ResponseHandler", "success");
                 sendSuccessMessage(statusLine.getStatusCode(), response.getAllHeaders(), responseBody);
             }
         }

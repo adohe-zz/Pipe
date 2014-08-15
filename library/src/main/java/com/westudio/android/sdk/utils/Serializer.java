@@ -1,4 +1,4 @@
-package com.westudio.android.sdk.uitls;
+package com.westudio.android.sdk.utils;
 
 import org.apache.avro.Schema;
 import org.apache.avro.io.Decoder;

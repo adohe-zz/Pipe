@@ -1,7 +1,7 @@
 package com.westudio.android.sdk.http;
 
 import com.westudio.android.sdk.loopj.android.http.AsyncHttpClient;
-import com.westudio.android.sdk.uitls.Serializer;
+import com.westudio.android.sdk.utils.Serializer;
 
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.http.HttpEntity;
