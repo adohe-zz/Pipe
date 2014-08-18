@@ -55,7 +55,7 @@ public class ServiceClient {
 
             ByteArrayOutputStream os = serializer_.serializer(requestObj, requestType);
             HttpEntity httpEntity = new ByteArrayEntity(os.toByteArray());
-            String url = serviceUrl;
+            String url = generateUrl(opName);
 
             ResponseHandler handler = new ResponseHandler(callback, responseType);
 

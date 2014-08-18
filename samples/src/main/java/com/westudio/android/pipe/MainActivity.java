@@ -41,7 +41,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View view) {
                 ServiceClient client = ServiceClient.getInstance();
-                client.setServiceUrl("http://172.16.144.109:8080");
+                client.setServiceUrl("http://*.*.*.*:8080");
 
                 // mock a AdRequest instance
                 AdRequest request = null;
