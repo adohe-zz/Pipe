@@ -2,10 +2,12 @@ package com.westudio.android.pipe;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.westudio.android.protocol.AdRequest;
@@ -18,7 +20,12 @@ import com.westudio.android.sdk.http.ServiceClient;
 
 public class MainActivity extends ActionBarActivity {
 
+    private static final String LOG_TAG = "MainActivity";
+
     private Button btn;
+    private EditText etName;
+    private EditText etCountry;
+    private EditText etCity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,20 +33,24 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         btn = (Button)findViewById(R.id.button);
+        etName = (EditText)findViewById(R.id.name);
+        etCountry = (EditText)findViewById(R.id.country);
+        etCity = (EditText)findViewById(R.id.city);
+
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ServiceClient client = ServiceClient.getInstance();
-                client.setServiceUrl("http://10.16.200.34:8080");
+                client.setServiceUrl("http://172.16.144.109:8080");
 
                 // mock a AdRequest instance
                 AdRequest request = null;
                 Person p = new Person();
                 p.setAddress1("China");
                 p.setAddress2("Shanghai");
-                p.setCity("Huangpu");
-                p.setCountry("China");
-                p.setFirstName("Tony");
+                p.setCity(etCity.getText().toString());
+                p.setCountry(etCountry.getText().toString());
+                p.setFirstName(etName.getText().toString());
                 p.setId(1);
                 p.setLastName("He");
                 p.setPostCode("021");
@@ -47,6 +58,7 @@ public class MainActivity extends ActionBarActivity {
                 client.invoke(request, "", AdRequest.class, AdResponse.class, new ServiceCallback<AdResponse>() {
                     @Override
                     public void onResponse(AdResponse response) {
+                        Log.v(LOG_TAG, "response size: " + response.getAds().size());
                         Toast.makeText(MainActivity.this, response.getAds().get(0).getFirstName(), Toast.LENGTH_SHORT).show();
                     }
 
