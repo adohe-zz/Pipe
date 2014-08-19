@@ -23,6 +23,8 @@ public class ServiceClient {
     private static final String DEFAULT_FORMAT = "json";
     private static final String CONTENT_TYPE = "application/json";
 
+    private String charset = "UTF-8";
+
     private ServiceClient() {
         httpClient = new AsyncHttpClient();
     }
@@ -67,11 +69,56 @@ public class ServiceClient {
         }
     }
 
-    public void setServiceUrl(String serviceUrl) {
-        this.serviceUrl = serviceUrl;
-    }
-
+    /**
+     * Generate the final service url
+     * @param opName specific operation name
+     * @return the final service url
+     */
     private String generateUrl(String opName) {
         return String.format("%s/%s/%s", serviceUrl, DEFAULT_FORMAT, opName);
+    }
+
+    /**
+     * Get inner async http client
+     * @return inner async http client
+     */
+    public AsyncHttpClient getHttpClient() {
+        return httpClient;
+    }
+
+    /**
+     * Get current service url setting
+     * @return service url
+     */
+    public String getServiceUrl() {
+        return serviceUrl;
+    }
+
+    /**
+     * Set target service url
+     * @param serviceUrl target service url
+     */
+    public void setServiceUrl(String serviceUrl) {
+        if (serviceUrl != null) {
+            this.serviceUrl = serviceUrl;
+        }
+    }
+
+    /**
+     * Get current charset for message encoding
+     * @return charset charset for message encoding
+     */
+    public String getCharset() {
+        return charset;
+    }
+
+    /**
+     * Set charset for message encoding
+     * @param charset charset for message encoding
+     */
+    public void setCharset(String charset) {
+        if (charset != null) {
+            this.charset = charset;
+        }
     }
 }
