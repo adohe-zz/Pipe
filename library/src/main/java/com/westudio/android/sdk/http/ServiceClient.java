@@ -8,7 +8,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 public class ServiceClient {
 
@@ -64,7 +63,7 @@ public class ServiceClient {
             ResponseHandler handler = new ResponseHandler(callback, responseType);
 
             httpClient.post(null, url, null, httpEntity, CONTENT_TYPE, handler);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

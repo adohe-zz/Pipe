@@ -18,11 +18,15 @@ public class Serializer {
         SpecificDatumWriter<T> writer = new SpecificDatumWriter<T>(clazz);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-        JsonEncoder encoder = EncoderFactory.get().jsonEncoder(request.getSchema(), os);
-        writer.write(request, encoder);
-        encoder.flush();
+        try {
+            JsonEncoder encoder = EncoderFactory.get().jsonEncoder(request.getSchema(), os);
+            writer.write(request, encoder);
+            encoder.flush();
 
-        return os;
+            return os;
+        } catch (Exception e) {
+            throw new IOException("failed to serialize object of type : " + clazz.getSimpleName());
+        }
     }
 
     public <T extends SpecificRecordBase> T deserialize(InputStream is, Class<T> clazz) throws IOException {
