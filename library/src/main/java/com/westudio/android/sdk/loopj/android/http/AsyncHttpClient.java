@@ -49,13 +49,14 @@ public class AsyncHttpClient {
     private static final int DEFAULT_MAX_CONNECTIONS = 10;
     private static final int DEFAULT_SOCKET_TIMEOUT = 10 * 1000;
     private static final int DEFAULT_BUFFER_SIZE = 8192;
+
     private static final String HEADER_CONTENT_TYPE = "Content-Type";
     private static final String HEADER_CONTENT_ENCODING = "Content-Encoding";
     private static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
     private static final String ENCODING_GZIP = "gzip";
 
     private int maxConnections = DEFAULT_MAX_CONNECTIONS;
-    private int timeout = DEFAULT_SOCKET_TIMEOUT;
+    private int connectTimeout = DEFAULT_SOCKET_TIMEOUT;
 
     private final DefaultHttpClient httpClient;
     private final HttpContext httpContext;
@@ -67,20 +68,20 @@ public class AsyncHttpClient {
 
         BasicHttpParams httpParams = new BasicHttpParams();
 
-        ConnManagerParams.setTimeout(httpParams, timeout);
+        ConnManagerParams.setTimeout(httpParams, connectTimeout);
         ConnManagerParams.setMaxConnectionsPerRoute(httpParams, new ConnPerRouteBean(maxConnections));
         ConnManagerParams.setMaxTotalConnections(httpParams, DEFAULT_MAX_CONNECTIONS);
 
-        HttpConnectionParams.setSoTimeout(httpParams, timeout);
-        HttpConnectionParams.setConnectionTimeout(httpParams, timeout);
+        HttpConnectionParams.setSoTimeout(httpParams, connectTimeout);
+        HttpConnectionParams.setConnectionTimeout(httpParams, connectTimeout);
         HttpConnectionParams.setTcpNoDelay(httpParams, true);
         HttpConnectionParams.setSocketBufferSize(httpParams, DEFAULT_BUFFER_SIZE);
 
         HttpProtocolParams.setVersion(httpParams, HttpVersion.HTTP_1_1);
-        HttpProtocolParams.setUserAgent(httpParams, "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2107.3 Safari/537.36");
 
         SchemeRegistry registry = new SchemeRegistry();
         registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+        // TODO: POTENTIAL SSL BUG?
         registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
         ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(httpParams, registry);
 
@@ -138,17 +139,17 @@ public class AsyncHttpClient {
     }
 
     public int getTimeout() {
-        return this.timeout;
+        return this.connectTimeout;
     }
 
     public void setTimeout(int timeout) {
         if (timeout < 1000)
             timeout = DEFAULT_SOCKET_TIMEOUT;
-        this.timeout = timeout;
+        this.connectTimeout = timeout;
         final HttpParams httpParams = this.httpClient.getParams();
-        ConnManagerParams.setTimeout(httpParams, this.timeout);
-        HttpConnectionParams.setConnectionTimeout(httpParams, this.timeout);
-        HttpConnectionParams.setSoTimeout(httpParams, this.timeout);
+        ConnManagerParams.setTimeout(httpParams, this.connectTimeout);
+        HttpConnectionParams.setConnectionTimeout(httpParams, this.connectTimeout);
+        HttpConnectionParams.setSoTimeout(httpParams, this.connectTimeout);
     }
 
     public void removeAllHeaders() {

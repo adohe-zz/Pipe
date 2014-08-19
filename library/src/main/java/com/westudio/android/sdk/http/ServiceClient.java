@@ -1,6 +1,8 @@
 package com.westudio.android.sdk.http;
 
+import com.westudio.android.sdk.exceptions.ServiceClientError;
 import com.westudio.android.sdk.loopj.android.http.AsyncHttpClient;
+import com.westudio.android.sdk.utils.ALog;
 import com.westudio.android.sdk.utils.Serializer;
 
 import org.apache.avro.specific.SpecificRecordBase;
@@ -64,7 +66,12 @@ public class ServiceClient {
 
             httpClient.post(null, url, null, httpEntity, CONTENT_TYPE, handler);
         } catch (Exception e) {
-            e.printStackTrace();
+            ALog.e(LOG_TAG, "Fail to send request", e);
+            if (callback != null) {
+                callback.onErrorResponse(new ServiceClientError("Fail to send request", e));
+            } else {
+                throw new RuntimeException(e);
+            }
         }
     }
 
