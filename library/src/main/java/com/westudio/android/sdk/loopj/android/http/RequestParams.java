@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RequestParams {
+
     private static String ENCODING = "UTF-8";
 
     protected ConcurrentHashMap<String, String> urlParams;
