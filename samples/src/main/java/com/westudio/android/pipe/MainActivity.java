@@ -41,7 +41,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View view) {
                 ServiceClient client = ServiceClient.getInstance();
-                client.setServiceUrl("http://*.*.*.*:8080");
+                client.setServiceUrl("http://172.16.144.109:8080");
 
                 // mock a AdRequest instance
                 AdRequest request = null;
@@ -55,7 +55,7 @@ public class MainActivity extends ActionBarActivity {
                 p.setLastName("He");
                 p.setPostCode("021");
                 request = AdRequest.newBuilder().setAdBB("BeepBoop").setPerson(p).build();
-                client.invoke(request, "", AdRequest.class, AdResponse.class, new ServiceCallback<AdResponse>() {
+                client.invoke(null, "", AdRequest.class, AdResponse.class, new ServiceCallback<AdResponse>() {
                     @Override
                     public void onResponse(AdResponse response) {
                         Log.v(LOG_TAG, "response size: " + response.getAds().size());

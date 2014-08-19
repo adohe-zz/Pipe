@@ -12,13 +12,15 @@ import java.io.IOException;
 
 public class ServiceClient {
 
+    private static final String LOG_TAG = "ServiceClient";
+
     private static volatile ServiceClient client = null;
     private AsyncHttpClient httpClient = null;
 
     private String serviceUrl = null;
     private final Serializer serializer_ = new Serializer();
 
-    private static final String FORMAT = "json";
+    private static final String DEFAULT_FORMAT = "json";
     private static final String CONTENT_TYPE = "application/json";
 
     private ServiceClient() {
@@ -42,15 +44,15 @@ public class ServiceClient {
 
         try {
             if (serviceUrl == null) {
-                throw new IllegalArgumentException("Endpoint url is missing");
+                throw new IllegalArgumentException("service url is missing");
             }
 
             if (callback == null) {
                 throw new IllegalArgumentException("callback is missing");
             }
 
-            if (responseType == null) {
-                throw new IllegalArgumentException("target bind class is missing");
+            if (requestType == null || responseType == null) {
+                throw new IllegalArgumentException("bind class is missing");
             }
 
             ByteArrayOutputStream os = serializer_.serializer(requestObj, requestType);
@@ -70,6 +72,6 @@ public class ServiceClient {
     }
 
     private String generateUrl(String opName) {
-        return String.format("%s/%s/%s", serviceUrl, FORMAT, opName);
+        return String.format("%s/%s/%s", serviceUrl, DEFAULT_FORMAT, opName);
     }
 }

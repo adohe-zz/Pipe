@@ -30,7 +30,6 @@ public class Serializer {
             T obj;
             obj = clazz.newInstance();
             Decoder decoder;
-            //decoder = DecoderFactory.get().jsonDecoder((Schema)clazz.getDeclaredMethod("getSchema", new Class[]{}).invoke(obj, null), is);
             decoder = DecoderFactory.get().jsonDecoder(obj.getSchema(), is);
             SpecificDatumReader<T> reader = new SpecificDatumReader<T>(clazz);
 
